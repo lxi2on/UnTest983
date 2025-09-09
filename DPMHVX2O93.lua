@@ -63,7 +63,7 @@ local frame = Instance.new("Frame")
 
 frame.Size = UDim2.new(0, 265, 0, 340)
 
-frame.Position = UDim2.new(0, 750, 0, 150)
+frame.Position = UDim2.new(0, 250, 0, 550)
 
 frame.BackgroundTransparency = 0.5
 
