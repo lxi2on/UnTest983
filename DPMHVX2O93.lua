@@ -1605,7 +1605,19 @@ local function UpdateTogglePosition()
     toggleButton.AnchorPoint = Vector2.new(0.5, 0)
     toggleButton.Position = UDim2.new(0, x, 0, toggleOffsetY)
 end
+-- Drag del toggle
+toggleButton.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        draggingToggle = true
+    end
+end)
 
+toggleButton.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        draggingToggle = false
+        SaveToggleRelativePosition()
+    end
+end)
 -- Reajusta al cambiar tamaño de ventana
 camera:GetPropertyChangedSignal("ViewportSize"):Connect(UpdateTogglePosition)
 
