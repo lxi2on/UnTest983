@@ -1611,11 +1611,14 @@ camera:GetPropertyChangedSignal("ViewportSize"):Connect(UpdateTogglePosition)
 
 -- Actualización inicial
 UpdateTogglePosition()
--- ===== Drag fluido para toggleButton =====
+-- ===== Drag fluido para toggleButton (ImageButton) =====
+local UIS = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
 local draggingToggle = false
 local dragInput, dragStart, startPos
 
--- Detectar inicio de drag
+-- Detectar inicio del drag
 toggleButton.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
         draggingToggle = true
@@ -1630,14 +1633,14 @@ toggleButton.InputBegan:Connect(function(input)
     end
 end)
 
--- Mover toggleButton mientras se arrastra
+-- Detectar movimiento de input
 toggleButton.InputChanged:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
         dragInput = input
     end
 end)
 
--- Actualizar posición con Tween para fluidez
+-- Actualizar posición de forma fluida
 RunService.RenderStepped:Connect(function()
     if draggingToggle and dragInput then
         local delta = dragInput.Position - dragStart
@@ -1646,3 +1649,4 @@ RunService.RenderStepped:Connect(function()
         toggleButton.Position = UDim2.new(0, newX, 0, newY)
     end
 end)
+
