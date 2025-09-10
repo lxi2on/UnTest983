@@ -4,7 +4,8 @@
 
 -------------------------------------------------------------------------------------------------------------------------------------
 # Latest version
-* loadstring(game:HttpGet("https://github.com/lxi2on/UnTest983/raw/refs/heads/main/TestV5.lua", true))()
+* ```lua
+loadstring(game:HttpGet("https://github.com/lxi2on/UnTest983/raw/refs/heads/main/TestV5.lua", true))()
 -------------------------------------------------------------------------------------------------------------------------------------
 # New
 * --
