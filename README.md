@@ -1,21 +1,44 @@
-# UnTestProject
+# 🚀 UnTestProject
 
--- TestV5.1 -- 
+* **Version:** `TestV5.1`  
+* **Status:** Active & Mobile/Tablet Compatible  
 
--------------------------------------------------------------------------------------------------------------------------------------
-# Latest version
+------------------------------------------------------------
+
+# 🔹 Latest Version
+
 ```lua
 loadstring(game:HttpGet("https://github.com/lxi2on/UnTest983/raw/refs/heads/main/TestV5.1.lua", true))()
 ```
--------------------------------------------------------------------------------------------------------------------------------------
-# New
-* Compatible with Mobile and tablet.
-* settings button grippable for 1 second, no more gripping errors.
-* SpeedLoopStuds Compatible with mobile devices and tablets, Also FlyLoopStuds.
-* Automatic adjustment of Large or Small screens, for mobile devices and tablets.
--------------------------------------------------------------------------------------------------------------------------------------
-# Attention
-* These scripts are made 95% AI (Chat Gpt) AND 5% (Human).
-------------------------------------------------------------------------------------------------------------------------------------
-* Thanks for Testing
--------------------------------------------------------------------------------------------------------------------------------------
+
+------------------------------------------------------------
+
+# ✨ What's New
+* ✅ Fully compatible with **Mobile and Tablet**.  
+* ✅ Settings button grippable for **1 second**, preventing gripping errors.  
+* ✅ **SpeedLoopStuds** and **FlyLoopStuds** now work on mobile/tablet devices.  
+* ✅ **Automatic screen adjustment** for large and small screens, optimized for mobile/tablet.  
+
+------------------------------------------------------------
+
+# ⚠️ Attention
+* Scripts are made **95% AI (ChatGPT) and 5% Human**.  
+* Make sure to use a **supported executor** for best results.  
+
+------------------------------------------------------------
+
+# 🛠 How to Use
+* Copy the loadstring code above.  
+* Paste it in your executor.  
+* Enjoy the optimized mobile/tablet experience!  
+
+------------------------------------------------------------
+
+# 🙏 Thanks for Testing 
+
+------------------------------------------------------------
+
+# 📌 Notes
+* Tested on **PC, Mobile, and Tablet**.  
+* Works with **most Roblox executors**.  
+* Designed for **smooth performance** and **responsive GUI**.
