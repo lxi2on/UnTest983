@@ -65,12 +65,23 @@ frameCorner3.Parent = topFrame
 local scrollFrame = Instance.new("ScrollingFrame")
 scrollFrame.Size = UDim2.new(1, 0, 1, -35) -- ocupa el resto del frame
 scrollFrame.Position = UDim2.new(0, 0, 0, 20)
-scrollFrame.CanvasSize = UDim2.new(0, 0, 2, 0) -- ajusta según la cantidad de botones
-scrollFrame.ScrollBarThickness = 8
 scrollFrame.BackgroundTransparency = 1
-scrollFrame.ScrollBarImageColor3 = Color3.fromRGB(180, 180, 180)
-scrollFrame.ScrollBarImageTransparency = 0.3  -- 0 es opaco, 1 invisible
-scrollFrame.ScrollBarThickness = 0  -- antes era 8
+scrollFrame.ScrollingEnabled = true
+scrollFrame.Active = true -- permite scroll en móvil/tablet
+scrollFrame.ScrollBarThickness = 0 -- grosor 0 para no mostrar
+scrollFrame.ScrollBarImageTransparency = 1 -- completamente invisible
+scrollFrame.ScrollBarImageColor3 = Color3.fromRGB(180, 180, 180) -- color si quieres mostrar en algún momento
+scrollFrame.ScrollingDirection = Enum.ScrollingDirection.Y
+-- Canvas dinámico según contenido
+scrollFrame:GetPropertyChangedSignal("CanvasPosition"):Connect(function()
+    local contentHeight = 0
+    for _, child in pairs(scrollFrame:GetChildren()) do
+        if child:IsA("GuiObject") then
+            contentHeight = math.max(contentHeight, child.Position.Y.Offset + child.AbsoluteSize.Y)
+        end
+    end
+    scrollFrame.CanvasSize = UDim2.new(0, 0, 0, contentHeight)
+end)
 scrollFrame.Parent = frame
 
 local lineFrame = Instance.new("Frame")
