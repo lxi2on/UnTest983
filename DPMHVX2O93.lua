@@ -1534,59 +1534,71 @@ if loopFlyButton then
 		end
 	end)
 end
--- 📌 Adaptación responsiva para frame y toggleButton
+-- 📌 Adaptación responsiva para frame y toggleButton (toggle más arriba tipo CoreGui)
 local camera = cam
-local relativePos = UDim2.new(0.5, 0, 0.5, 0) -- inicio al medio
-local dragging = false
+local frameRelativePos = UDim2.new(0.5, 0, 0.5, 0) -- posición inicial del frame
+local toggleRelativePos = nil -- guardaremos posición relativa del toggle
+local draggingFrame = false
 
--- Actualiza posición de frame y toggleButton
+-- Actualiza posición del frame y toggle
 local function UpdatePosition()
+    -- Frame principal
     frame.AnchorPoint = Vector2.new(0.5, 0.5)
     frame.Position = UDim2.new(
-        relativePos.X.Scale,
-        relativePos.X.Offset,
-        relativePos.Y.Scale,
-        relativePos.Y.Offset
+        frameRelativePos.X.Scale,
+        frameRelativePos.X.Offset,
+        frameRelativePos.Y.Scale,
+        frameRelativePos.Y.Offset
     )
 
-    -- toggleButton arriba y centrado
-    local absPos = frame.AbsolutePosition
-    local absSize = frame.AbsoluteSize
-    local centerX = absPos.X + absSize.X * 0.5
-    local topY = absPos.Y
-    local padding = 12
+    -- ToggleButton
+    if not toggleRelativePos then
+        local absPos = frame.AbsolutePosition
+        local absSize = frame.AbsoluteSize
+        local centerX = absPos.X + absSize.X * 0.5
 
-    toggleButton.AnchorPoint = Vector2.new(0.5, 1)
-    toggleButton.Position = UDim2.new(0, centerX, 0, topY - padding)
+        -- Lo subimos más: altura aproximada de los botones de CoreGui (~50px desde top)
+        local toggleY = math.max(50, absPos.Y - 20) -- 50px mínimo desde arriba
+
+        toggleButton.AnchorPoint = Vector2.new(0.5, 0)
+        toggleButton.Position = UDim2.new(0, centerX, 0, toggleY)
+    else
+        toggleButton.AnchorPoint = Vector2.new(0.5, 0.5)
+        toggleButton.Position = UDim2.new(
+            toggleRelativePos.X.Scale,
+            toggleRelativePos.X.Offset,
+            toggleRelativePos.Y.Scale,
+            toggleRelativePos.Y.Offset
+        )
+    end
 end
 
--- Guarda posición relativa
-local function SaveRelativePosition()
+-- Guardar posición relativa del frame
+local function SaveFrameRelativePosition()
     local viewport = camera.ViewportSize
     local absPos = frame.AbsolutePosition
     local absSize = frame.AbsoluteSize
     local centerX = absPos.X + absSize.X * 0.5
     local centerY = absPos.Y + absSize.Y * 0.5
 
-    relativePos = UDim2.new(centerX / viewport.X, 0, centerY / viewport.Y, 0)
+    frameRelativePos = UDim2.new(centerX / viewport.X, 0, centerY / viewport.Y, 0)
 end
 
--- Detectar drag
+-- Detectar drag del frame
 topFrame.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-        dragging = true
+        draggingFrame = true
     end
 end)
-
 topFrame.InputEnded:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-        dragging = false
-        SaveRelativePosition()
+        draggingFrame = false
+        SaveFrameRelativePosition()
     end
 end)
 
--- Cuando cambia el tamaño de la pantalla → reajustar
+-- Actualizar posición al cambiar tamaño de pantalla
 camera:GetPropertyChangedSignal("ViewportSize"):Connect(UpdatePosition)
 
--- Actualización inicial
+-- Forzar actualización inicial
 UpdatePosition()
