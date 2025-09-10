@@ -1591,39 +1591,32 @@ camera:GetPropertyChangedSignal("ViewportSize"):Connect(UpdateFramePosition)
 
 -- Inicial
 UpdateFramePosition()
--- ===== ToggleButton responsivo tipo CoreGui =====
+-- ===== ToggleButton responsivo tipo CoreGui + drag estable =====
 local camera = cam
-
--- Ajustes
-local toggleOffsetY = -25 -- distancia desde top, ajusta como CoreGui
-local toggleCenterX = 0.5 -- siempre centrado horizontalmente
-
--- Actualiza posición del toggleButton
-local function UpdateTogglePosition()
-    local viewport = camera.ViewportSize
-    local x = viewport.X * toggleCenterX
-    toggleButton.AnchorPoint = Vector2.new(0.5, 0)
-    toggleButton.Position = UDim2.new(0, x, 0, toggleOffsetY)
-end
-
--- Reajusta al cambiar tamaño de ventana
-camera:GetPropertyChangedSignal("ViewportSize"):Connect(UpdateTogglePosition)
-
--- Actualización inicial
-UpdateTogglePosition()
--- ===== Drag fluido para toggleButton (ImageButton) =====
-local UIS = game:GetService("UserInputService")
-local RunService = game:GetService("RunService")
-
 local draggingToggle = false
 local dragInput, dragStart, startPos
+local hasBeenDragged = false -- NUEVO: detecta si el usuario arrastró el botón
 
--- Detectar inicio del drag
+local toggleOffsetY = 50 -- distancia desde top si no se mueve
+local toggleCenterX = 0.5 -- siempre centrado horizontalmente
+
+-- Actualiza posición del toggleButton solo si no ha sido arrastrado
+local function UpdateTogglePosition()
+    if not hasBeenDragged then
+        local viewport = camera.ViewportSize
+        local x = viewport.X * toggleCenterX
+        toggleButton.AnchorPoint = Vector2.new(0.5, 0)
+        toggleButton.Position = UDim2.new(0, x, 0, toggleOffsetY)
+    end
+end
+
+-- Drag fluido
 toggleButton.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
         draggingToggle = true
         dragStart = input.Position
         startPos = toggleButton.Position
+        hasBeenDragged = true -- marcamos que se arrastró
 
         input.Changed:Connect(function()
             if input.UserInputState == Enum.UserInputState.End then
@@ -1633,14 +1626,12 @@ toggleButton.InputBegan:Connect(function(input)
     end
 end)
 
--- Detectar movimiento de input
 toggleButton.InputChanged:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
         dragInput = input
     end
 end)
 
--- Actualizar posición de forma fluida
 RunService.RenderStepped:Connect(function()
     if draggingToggle and dragInput then
         local delta = dragInput.Position - dragStart
@@ -1650,3 +1641,8 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
+-- Reajusta solo si el usuario no lo ha movido
+camera:GetPropertyChangedSignal("ViewportSize"):Connect(UpdateTogglePosition)
+
+-- Inicial
+UpdateTogglePosition()
