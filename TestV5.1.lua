@@ -1634,12 +1634,27 @@ local function startFlyLoop()
 		if moveKeys.A then dir -= cam.CFrame.RightVector end
 		if moveKeys.D then dir += cam.CFrame.RightVector end
 
-		-- ✅ Movimiento por Joystick (Móvil/Tablet)
+		-- ✅ Movimiento por Joystick (Móvil/Tablet optimizado)
 		if humanoid then
 			local joyDir = humanoid.MoveDirection
 			if joyDir.Magnitude > 0 then
-				local joyWorld = cam.CFrame:VectorToWorldSpace(joyDir)
-				dir += Vector3.new(joyWorld.X, 0, joyWorld.Z)
+				local absX, absZ = math.abs(joyDir.X), math.abs(joyDir.Z)
+
+				if absX > absZ then
+					-- Solo izquierda/derecha
+					if joyDir.X > 0 then
+						dir += cam.CFrame.RightVector
+					else
+						dir -= cam.CFrame.RightVector
+					end
+				else
+					-- Solo adelante/atrás
+					if joyDir.Z > 0 then
+						dir += cam.CFrame.LookVector
+					else
+						dir -= cam.CFrame.LookVector
+					end
+				end
 			end
 		end
 
@@ -1708,12 +1723,27 @@ function startSpeedLoop()
 		if UIS:IsKeyDown(Enum.KeyCode.A) then moveVec -= camRight end
 		if UIS:IsKeyDown(Enum.KeyCode.D) then moveVec += camRight end
 
-		-- ✅ Movimiento por Joystick (Móvil/Tablet)
+		-- ✅ Movimiento por Joystick (Móvil/Tablet optimizado)
 		if humanoid then
 			local joyDir = humanoid.MoveDirection
 			if joyDir.Magnitude > 0 then
-				local joyWorld = cam.CFrame:VectorToWorldSpace(joyDir)
-				moveVec += Vector3.new(joyWorld.X, 0, joyWorld.Z)
+				local absX, absZ = math.abs(joyDir.X), math.abs(joyDir.Z)
+
+				if absX > absZ then
+					-- Solo izquierda/derecha
+					if joyDir.X > 0 then
+						moveVec += camRight
+					else
+						moveVec -= camRight
+					end
+				else
+					-- Solo adelante/atrás
+					if joyDir.Z > 0 then
+						moveVec += camForward
+					else
+						moveVec -= camForward
+					end
+				end
 			end
 		end
 
