@@ -742,7 +742,7 @@ utilitiesScroll.ScrollBarImageColor3 = Color3.fromRGB(180, 180, 180)
 utilitiesScroll.ScrollBarImageTransparency = 0.2
 utilitiesScroll.Parent = utilitiesFrame
 
--- Botón Loop Fly
+-- Botón SpeedLoopMode
 local flyButton = Instance.new("TextButton")
 flyButton.Name = "SpeedLoopButton"
 flyButton.Size = UDim2.new(0, 150, 0, 42)
@@ -760,32 +760,32 @@ loopFlyCorner.CornerRadius = UDim.new(0, 8)
 loopFlyCorner.Parent = flyButton
 
 -- TextBox para "studs" (distancia objetivo)
-local studsBox = Instance.new("TextBox")
-studsBox.Size = UDim2.new(0, 80, 1, 0)
-studsBox.Position = UDim2.new(1, -158, 0, 44)
-studsBox.Parent = flyButton
-studsBox.Text = "15"
-studsBox.PlaceholderText = "Studs"
-studsBox.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-studsBox.TextColor3 = Color3.new(1, 1, 1)
+local studsBox1 = Instance.new("TextBox")
+studsBox1.Size = UDim2.new(0, 80, 1, 0)
+studsBox1.Position = UDim2.new(1, -158, 0, 44)
+studsBox1.Parent = flyButton
+studsBox1.Text = "15"
+studsBox1.PlaceholderText = "Studs"
+studsBox1.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+studsBox1.TextColor3 = Color3.new(1, 1, 1)
 
 local studsCorner = Instance.new("UICorner")
 studsCorner.CornerRadius = UDim.new(0, 8)
-studsCorner.Parent = studsBox
+studsCorner.Parent = studsBox1
 
 -- TextBox para "FlySpeed" (fluidez)
-local speedBox = Instance.new("TextBox")
-speedBox.Size = UDim2.new(0, 80, 1, 0)
-speedBox.Position = UDim2.new(1, -68, 0, 44)
-speedBox.Parent = flyButton
-speedBox.Text = "16"
-speedBox.PlaceholderText = "Speed"
-speedBox.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-speedBox.TextColor3 = Color3.new(1, 1, 1)
+local speedBox1 = Instance.new("TextBox")
+speedBox1.Size = UDim2.new(0, 80, 1, 0)
+speedBox1.Position = UDim2.new(1, -68, 0, 44)
+speedBox1.Parent = flyButton
+speedBox1.Text = "16"
+speedBox1.PlaceholderText = "Speed"
+speedBox1.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+speedBox1.TextColor3 = Color3.new(1, 1, 1)
 
 local speedBoxCorner = Instance.new("UICorner")
 speedBoxCorner.CornerRadius = UDim.new(0, 8)
-speedBoxCorner.Parent = speedBox
+speedBoxCorner.Parent = speedBox1
 
 local button = Instance.new("TextButton")
 button.Name = "SitButton"
@@ -821,34 +821,34 @@ loopFlyButtonCorner.CornerRadius = UDim.new(0, 8)
 loopFlyButtonCorner.Parent = loopFlyButton
 
 -- TextBox Studs
-local studsBoxx = Instance.new("TextBox")
-studsBoxx.Name = "StudsBoxx"
-studsBoxx.PlaceholderText = "Studs"
-studsBoxx.Text = "150"
-studsBoxx.Size = UDim2.new(0, 80, 1, 0)
-studsBoxx.Position = UDim2.new(1, -156, 0, 44)
-studsBoxx.Parent = loopFlyButton
-studsBoxx.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-studsBoxx.TextColor3 = Color3.new(1, 1, 1)
+local studsBox2 = Instance.new("TextBox")
+studsBox2.Name = "StudsBoxx"
+studsBox2.PlaceholderText = "Studs"
+studsBox2.Text = "150"
+studsBox2.Size = UDim2.new(0, 80, 1, 0)
+studsBox2.Position = UDim2.new(1, -156, 0, 44)
+studsBox2.Parent = loopFlyButton
+studsBox2.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+studsBox2.TextColor3 = Color3.new(1, 1, 1)
 
-local studsBoxxCorner = Instance.new("UICorner")
-studsBoxxCorner.CornerRadius = UDim.new(0, 8)
-studsBoxxCorner.Parent = studsBoxx
+local studsBox2Corner = Instance.new("UICorner")
+studsBox2Corner.CornerRadius = UDim.new(0, 8)
+studsBox2Corner.Parent = studsBox2
 
 -- TextBox Speed
-local speedBoxx = Instance.new("TextBox")
-speedBoxx.Name = "SpeedBox"
-speedBoxx.PlaceholderText = "FlySpeed"
-speedBoxx.Text = "16"
-speedBoxx.Size = UDim2.new(0, 80, 1, 0)
-speedBoxx.Position = UDim2.new(1, -64, 0, 44)
-speedBoxx.Parent = loopFlyButton
-speedBoxx.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-speedBoxx.TextColor3 = Color3.new(1, 1, 1)
+local speedBox2 = Instance.new("TextBox")
+speedBox2.Name = "SpeedBox"
+speedBox2.PlaceholderText = "FlySpeed"
+speedBox2.Text = "16"
+speedBox2.Size = UDim2.new(0, 80, 1, 0)
+speedBox2.Position = UDim2.new(1, -64, 0, 44)
+speedBox2.Parent = loopFlyButton
+speedBox2.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+speedBox2.TextColor3 = Color3.new(1, 1, 1)
 
-local speedBoxxCorner = Instance.new("UICorner")
-speedBoxxCorner.CornerRadius = UDim.new(0, 8)
-speedBoxxCorner.Parent = speedBoxx
+local speedBox2Corner = Instance.new("UICorner")
+speedBox2Corner.CornerRadius = UDim.new(0, 8)
+speedBox2Corner.Parent = speedBox2
 
 local fovBox = createTextBox("FOVBox", "FOV (ej: 120)", UDim2.new(0, 75, 0, 240), boxSize)
 fovBox.Parent = utilitiesScroll
@@ -1216,6 +1216,99 @@ gamesScroll.ScrollBarImageColor3 = Color3.fromRGB(180, 180, 180)
 gamesScroll.ScrollBarImageTransparency = 0.2
 gamesScroll.Parent = gamesFrame
 
+local listGames = Instance.new("UIListLayout")
+listGames.FillDirection = Enum.FillDirection.Vertical
+listGames.Padding = UDim.new(0, 4)
+listGames.Parent = gamesScroll
+listGames.SortOrder = Enum.SortOrder.LayoutOrder
+listGames.HorizontalAlignment = Enum.HorizontalAlignment.Center
+
+local inkGamesButton = Instance.new("TextButton")
+inkGamesButton.Name = "InkGameButton"
+inkGamesButton.Size = UDim2.new(0, 150, 0, 42)
+inkGamesButton.Position = UDim2.new(0, 28, 0, 5)
+inkGamesButton.Text = "Load Ink Game Script V1"
+inkGamesButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+inkGamesButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+inkGamesButton.Font = Enum.Font.SourceSansBold
+inkGamesButton.TextSize = 16
+inkGamesButton.Parent = gamesScroll
+inkGamesButton.ZIndex = 23
+inkGamesButton.LayoutOrder = 1
+
+local inkGamesTopCorner = Instance.new("UICorner")
+inkGamesTopCorner.CornerRadius = UDim.new(0, 8)
+inkGamesTopCorner.Parent = inkGamesButton
+
+local inkGamesV2Button = Instance.new("TextButton")
+inkGamesV2Button.Name = "InkGameV2Button"
+inkGamesV2Button.Size = UDim2.new(0, 150, 0, 42)
+inkGamesV2Button.Position = UDim2.new(0, 28, 0, 5)
+inkGamesV2Button.Text = "Load Ink Game Script V2"
+inkGamesV2Button.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+inkGamesV2Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+inkGamesV2Button.Font = Enum.Font.SourceSansBold
+inkGamesV2Button.TextSize = 16
+inkGamesV2Button.Parent = gamesScroll
+inkGamesV2Button.ZIndex = 23
+inkGamesV2Button.LayoutOrder = 2
+
+local inkGamesV2TopCorner = Instance.new("UICorner")
+inkGamesV2TopCorner.CornerRadius = UDim.new(0, 8)
+inkGamesV2TopCorner.Parent = inkGamesV2Button
+
+local daHoodv1Button = Instance.new("TextButton")
+daHoodv1Button.Name = "DaHoodv1Button"
+daHoodv1Button.Size = UDim2.new(0, 150, 0, 42)
+daHoodv1Button.Position = UDim2.new(0, 28, 0, 5)
+daHoodv1Button.Text = "Load AzureModded"
+daHoodv1Button.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+daHoodv1Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+daHoodv1Button.Font = Enum.Font.SourceSansBold
+daHoodv1Button.TextSize = 16
+daHoodv1Button.Parent = gamesScroll
+daHoodv1Button.ZIndex = 23
+daHoodv1Button.LayoutOrder = 3
+
+local DaHoodv1TopCorner = Instance.new("UICorner")
+DaHoodv1TopCorner.CornerRadius = UDim.new(0, 8)
+DaHoodv1TopCorner.Parent = daHoodv1Button
+
+-- Script Raw -Loadstring 
+
+inkGamesButton.MouseButton1Click:Connect(function()
+    pcall(function()
+		inkGamesButton.Text = "Loading. . ."
+		inkGamesButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/VapeVoidware/VW-Add/main/inkgame.lua", true))()
+    end)
+	inkGamesButton.Text = "Load Ink Game Script V1"
+	inkGamesButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+	task.wait(5)
+end)
+
+inkGamesV2Button.MouseButton1Click:Connect(function()
+    pcall(function()
+		inkGamesV2Button.Text = "Not Available. . ."
+		inkGamesV2Button.BackgroundColor3 = Color3.fromRGB(125, 0, 0)
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/VapeVoidware/VW-Add/main/inkgame.json", true))()
+    end)
+	inkGamesV2Button.Text = "Load Ink Game Script V2"
+	inkGamesV2Button.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+	task.wait(5)
+end)
+
+daHoodv1Button.MouseButton1Click:Connect(function()
+    pcall(function()
+		daHoodv1Button.Text = "Loading. . ."
+		daHoodv1Button.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Actyrn/Scripts/main/AzureModded"))()
+    end)
+	daHoodv1Button.Text = "Load AzureModded"
+	daHoodv1Button.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+	task.wait(5)
+end)
+
 -- Alternar visibilidad con el botón "Games"
 pag3.MouseButton1Click:Connect(function()
 	gamesFrame.Visible = not gamesFrame.Visible
@@ -1474,196 +1567,192 @@ local RunService = game:GetService("RunService")
 local UIS = game:GetService("UserInputService")
 local player = Players.LocalPlayer
 
--- Variables
+-- Variables de estado
 local speedLoopActive = false
 local flyLoopActive = false
-
 local speedLoopConnection = nil
 local flyLoopConnection = nil
 local prevAutoRotateSpeed = nil
-local prevAutoRotateFly = nil
-
--- Referencias dinámicas
-local function getChar()
-    local char = player.Character
-    if not char then return end
-    local hrp = char:FindFirstChild("HumanoidRootPart")
-    local humanoid = char:FindFirstChildOfClass("Humanoid")
-    return char, hrp, humanoid
-end
-
--- Clamping
-local function clamp(n, a, b) return math.max(a, math.min(b, n)) end
-
--- ======= SpeedLoop (Z) =======
-local function stopSpeedLoop()
-    if speedLoopConnection then
-        speedLoopConnection:Disconnect()
-        speedLoopConnection = nil
-    end
-    local char, hrp, humanoid = getChar()
-    if humanoid and prevAutoRotateSpeed ~= nil then
-        humanoid.AutoRotate = prevAutoRotateSpeed
-    end
-    speedLoopActive = false
-    if speedButton then
-        speedButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-        speedButton.Text = "SpeedLoop (OFF)"
-    end
-end
-
-local function toggleSpeedLoop()
-    local char, hrp, humanoid = getChar()
-    if not (char and hrp and humanoid) then return end
-
-    if speedLoopActive then
-        stopSpeedLoop()
-        return
-    end
-
-    -- Si FlyLoop está activo, apagar
-    if flyLoopActive then
-        stopFlyLoop()
-    end
-
-    speedLoopActive = true
-    speedButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-    speedButton.Text = "SpeedLoop (ON)"
-
-    prevAutoRotateSpeed = humanoid.AutoRotate
-    humanoid.AutoRotate = false
-
-    speedLoopConnection = RunService.RenderStepped:Connect(function(delta)
-        local studs = tonumber(studsBox.Text) or 15
-        studs = clamp(studs, 0, 1000)
-        local flySpeed = tonumber(speedBox.Text) or 16
-        flySpeed = clamp(flySpeed, 0, 1000)
-
-        local moveVec = Vector3.new()
-        local cam = workspace.CurrentCamera
-        if not cam then return end
-
-        local camForward = Vector3.new(cam.CFrame.LookVector.X, 0, cam.CFrame.LookVector.Z).Unit
-        local camRight = Vector3.new(cam.CFrame.RightVector.X, 0, cam.CFrame.RightVector.Z).Unit
-
-        if UIS:IsKeyDown(Enum.KeyCode.W) then moveVec += camForward end
-        if UIS:IsKeyDown(Enum.KeyCode.S) then moveVec -= camForward end
-        if UIS:IsKeyDown(Enum.KeyCode.A) then moveVec -= camRight end
-        if UIS:IsKeyDown(Enum.KeyCode.D) then moveVec += camRight end
-
-        local targetPos = hrp.Position
-        if moveVec.Magnitude > 0 then
-            targetPos += moveVec.Unit * studs
-        end
-
-        local alpha = 1 - math.exp(-flySpeed * delta)
-        local newPos = hrp.Position:Lerp(targetPos, alpha)
-        local lookDir = Vector3.new(camForward.X, 0, camForward.Z).Unit
-        hrp.CFrame = CFrame.new(newPos, newPos + lookDir)
-    end)
-end
-
--- Conectar botón y tecla Z
-if speedButton then
-    speedButton.MouseButton1Click:Connect(toggleSpeedLoop)
-end
-UIS.InputBegan:Connect(function(input, gpe)
-    if gpe then return end
-    if input.KeyCode == Enum.KeyCode.Z then
-        toggleSpeedLoop()
-    end
-end)
-
--- ======= FlyLoop (V) =======
 local moveKeys = {W=false, A=false, S=false, D=false}
 local targetPosition
 
+-- Referencias dinámicas
+local function getChar()
+	local char = player.Character
+	if not char then return end
+	local hrp = char:FindFirstChild("HumanoidRootPart")
+	local humanoid = char:FindFirstChildOfClass("Humanoid")
+	return char, hrp, humanoid
+end
+
+local function clamp(n, a, b) return math.max(a, math.min(b, n)) end
+
+-- ================== LOOP FLY (V) ==================
 local function stopFlyLoop()
-    if flyLoopConnection then
-        flyLoopConnection:Disconnect()
-        flyLoopConnection = nil
-    end
-    local char, hrp, humanoid = getChar()
-    if humanoid and hrp then
-        humanoid.PlatformStand = false
-        hrp.Velocity = Vector3.zero
-    end
-    flyLoopActive = false
-    if flyButton then
-        flyButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-        flyButton.Text = "FlyLoop (OFF)"
-    end
+	if flyLoopConnection then
+		flyLoopConnection:Disconnect()
+		flyLoopConnection = nil
+	end
+	local char, root, humanoid = getChar()
+	if humanoid and root then
+		humanoid.PlatformStand = false
+		root.Velocity = Vector3.zero
+	end
+	flyLoopActive = false
+	if loopFlyButton then
+		loopFlyButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+		loopFlyButton.Text = "Loop Fly (OFF)"
+	end
 end
 
 local function resolveCharacter()
-    local char = player.Character or player.CharacterAdded:Wait()
-    local humanoid = char:WaitForChild("Humanoid")
-    local root = char:WaitForChild("HumanoidRootPart")
-    return char, root, humanoid
+	local char = player.Character or player.CharacterAdded:Wait()
+	local humanoid = char:WaitForChild("Humanoid")
+	local root = char:WaitForChild("HumanoidRootPart")
+	return char, root, humanoid
 end
 
 local function startFlyLoop()
-    local char, root, humanoid = resolveCharacter()
-    if not (char and root and humanoid) then return end
-    humanoid.PlatformStand = true
-    targetPosition = root.Position
+	local char, root, humanoid = resolveCharacter()
+	if not (char and root and humanoid) then return end
+	humanoid.PlatformStand = true
+	targetPosition = root.Position
 
-    if flyLoopConnection then flyLoopConnection:Disconnect() end
-    flyLoopConnection = RunService.RenderStepped:Connect(function(dt)
-        local studs = tonumber(studsBoxx.Text) or 150
-        local speed = tonumber(speedBoxx.Text) or 16
-        local cam = workspace.CurrentCamera
+	if flyLoopConnection then flyLoopConnection:Disconnect() end
+	flyLoopConnection = RunService.RenderStepped:Connect(function(dt)
+		local studs = tonumber(studsBox2.Text) or 150
+		local speed = tonumber(speedBox2.Text) or 16
+		local cam = workspace.CurrentCamera
 
-        local dir = Vector3.zero
-        if moveKeys.W then dir += cam.CFrame.LookVector end
-        if moveKeys.S then dir -= cam.CFrame.LookVector end
-        if moveKeys.A then dir -= cam.CFrame.RightVector end
-        if moveKeys.D then dir += cam.CFrame.RightVector end
-        if dir.Magnitude > 0 then
-            dir = dir.Unit
-            targetPosition += dir * studs * (speed/16) * dt
-        end
+		local dir = Vector3.zero
+		if moveKeys.W then dir += cam.CFrame.LookVector end
+		if moveKeys.S then dir -= cam.CFrame.LookVector end
+		if moveKeys.A then dir -= cam.CFrame.RightVector end
+		if moveKeys.D then dir += cam.CFrame.RightVector end
+		if dir.Magnitude > 0 then
+			dir = dir.Unit
+			targetPosition += dir * studs * (speed/16) * dt
+		end
 
-        local lookVector = (cam.CFrame.Position - targetPosition) * -1
-        root.CFrame = CFrame.new(targetPosition, targetPosition + lookVector)
-        root.Velocity = Vector3.zero
-    end)
+		local lookVector = (cam.CFrame.Position - targetPosition) * -1
+		root.CFrame = CFrame.new(targetPosition, targetPosition + lookVector)
+		root.Velocity = Vector3.zero
+	end)
 end
 
 local function toggleFlyLoop()
-    if flyLoopActive then
-        stopFlyLoop()
-        return
-    end
+	if flyLoopActive then
+		stopFlyLoop()
+		return
+	end
 
-    -- Si SpeedLoop está activo, apagar
-    if speedLoopActive then
-        stopSpeedLoop()
-    end
+	if speedLoopActive then
+		stopSpeedLoop()
+	end
 
-    flyLoopActive = true
-    if flyButton then
-        flyButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-        flyButton.Text = "FlyLoop (ON)"
-    end
-    startFlyLoop()
+	flyLoopActive = true
+	if loopFlyButton then
+		loopFlyButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+		loopFlyButton.Text = "Loop Fly (ON)"
+	end
+	startFlyLoop()
 end
 
--- Conectar botón y tecla V
+-- ================== SPEED LOOP MODE (Z) ==================
+local function stopSpeedLoop()
+	if speedLoopConnection then
+		speedLoopConnection:Disconnect()
+		speedLoopConnection = nil
+	end
+	local char, hrp, humanoid = getChar()
+	if humanoid and prevAutoRotateSpeed ~= nil then
+		humanoid.AutoRotate = prevAutoRotateSpeed
+	end
+	speedLoopActive = false
+	if flyButton then
+		flyButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+		flyButton.Text = "Speed Loop Mode"
+	end
+end
+
+local function startSpeedLoop()
+	local char, hrp, humanoid = getChar()
+	if not (char and hrp and humanoid) then return end
+	prevAutoRotateSpeed = humanoid.AutoRotate
+	humanoid.AutoRotate = false
+
+	if speedLoopConnection then speedLoopConnection:Disconnect() end
+	speedLoopConnection = RunService.RenderStepped:Connect(function(delta)
+		local studs = tonumber(studsBox1.Text) or 15
+		local speed = tonumber(speedBox1.Text) or 16
+		studs = clamp(studs, 0, 1000)
+		speed = clamp(speed, 0, 1000)
+
+		local moveVec = Vector3.new()
+		local cam = workspace.CurrentCamera
+		if not cam then return end
+
+		local camForward = Vector3.new(cam.CFrame.LookVector.X, 0, cam.CFrame.LookVector.Z).Unit
+		local camRight = Vector3.new(cam.CFrame.RightVector.X, 0, cam.CFrame.RightVector.Z).Unit
+
+		if UIS:IsKeyDown(Enum.KeyCode.W) then moveVec += camForward end
+		if UIS:IsKeyDown(Enum.KeyCode.S) then moveVec -= camForward end
+		if UIS:IsKeyDown(Enum.KeyCode.A) then moveVec -= camRight end
+		if UIS:IsKeyDown(Enum.KeyCode.D) then moveVec += camRight end
+
+		local targetPos = hrp.Position
+		if moveVec.Magnitude > 0 then
+			targetPos += moveVec.Unit * studs
+		end
+
+		local alpha = 1 - math.exp(-speed * delta)
+		local newPos = hrp.Position:Lerp(targetPos, alpha)
+		local lookDir = Vector3.new(camForward.X, 0, camForward.Z).Unit
+		hrp.CFrame = CFrame.new(newPos, newPos + lookDir)
+	end)
+end
+
+local function toggleSpeedLoop()
+	if speedLoopActive then
+		stopSpeedLoop()
+		return
+	end
+
+	if flyLoopActive then
+		stopFlyLoop()
+	end
+
+	speedLoopActive = true
+	if flyButton then
+		flyButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+		flyButton.Text = "Speed Loop Mode (ON)"
+	end
+	startSpeedLoop()
+end
+
+-- ================== BOTONES Y TECLAS ==================
 if flyButton then
-    flyButton.MouseButton1Click:Connect(toggleFlyLoop)
+	flyButton.MouseButton1Click:Connect(toggleSpeedLoop)
 end
+if loopFlyButton then
+	loopFlyButton.MouseButton1Click:Connect(toggleFlyLoop)
+end
+
 UIS.InputBegan:Connect(function(input, gpe)
-    if gpe then return end
-    if input.KeyCode == Enum.KeyCode.V then
-        toggleFlyLoop()
-    end
+	if gpe then return end
+	if input.KeyCode == Enum.KeyCode.Z then toggleSpeedLoop() end
+	if input.KeyCode == Enum.KeyCode.V then toggleFlyLoop() end
+	if moveKeys[input.KeyCode.Name] ~= nil then moveKeys[input.KeyCode.Name] = true end
 end)
 
--- Reconectar al respawnear
+UIS.InputEnded:Connect(function(input)
+	if moveKeys[input.KeyCode.Name] ~= nil then moveKeys[input.KeyCode.Name] = false end
+end)
+
+-- ================== REINICIO AL RESPAWNEAR ==================
 player.CharacterAdded:Connect(function()
-    stopSpeedLoop()
-    stopFlyLoop()
+	stopSpeedLoop()
+	stopFlyLoop()
 end)
 
 -- ===== Bloque Frame =====
