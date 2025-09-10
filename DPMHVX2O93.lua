@@ -1534,3 +1534,59 @@ if loopFlyButton then
 		end
 	end)
 end
+-- 📌 Adaptación responsiva para frame y toggleButton
+local camera = cam
+local relativePos = UDim2.new(0.5, 0, 0.5, 0) -- inicio al medio
+local dragging = false
+
+-- Actualiza posición de frame y toggleButton
+local function UpdatePosition()
+    frame.AnchorPoint = Vector2.new(0.5, 0.5)
+    frame.Position = UDim2.new(
+        relativePos.X.Scale,
+        relativePos.X.Offset,
+        relativePos.Y.Scale,
+        relativePos.Y.Offset
+    )
+
+    -- toggleButton arriba y centrado
+    local absPos = frame.AbsolutePosition
+    local absSize = frame.AbsoluteSize
+    local centerX = absPos.X + absSize.X * 0.5
+    local topY = absPos.Y
+    local padding = 12
+
+    toggleButton.AnchorPoint = Vector2.new(0.5, 1)
+    toggleButton.Position = UDim2.new(0, centerX, 0, topY - padding)
+end
+
+-- Guarda posición relativa
+local function SaveRelativePosition()
+    local viewport = camera.ViewportSize
+    local absPos = frame.AbsolutePosition
+    local absSize = frame.AbsoluteSize
+    local centerX = absPos.X + absSize.X * 0.5
+    local centerY = absPos.Y + absSize.Y * 0.5
+
+    relativePos = UDim2.new(centerX / viewport.X, 0, centerY / viewport.Y, 0)
+end
+
+-- Detectar drag
+topFrame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+    end
+end)
+
+topFrame.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = false
+        SaveRelativePosition()
+    end
+end)
+
+-- Cuando cambia el tamaño de la pantalla → reajustar
+camera:GetPropertyChangedSignal("ViewportSize"):Connect(UpdatePosition)
+
+-- Actualización inicial
+UpdatePosition()
