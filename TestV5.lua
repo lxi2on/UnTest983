@@ -1274,6 +1274,23 @@ local DaHoodv1TopCorner = Instance.new("UICorner")
 DaHoodv1TopCorner.CornerRadius = UDim.new(0, 8)
 DaHoodv1TopCorner.Parent = daHoodv1Button
 
+local murderMysteriyv1Button = Instance.new("TextButton")
+murderMysteriyv1Button.Name = "MurderMysteriyv1Button"
+murderMysteriyv1Button.Size = UDim2.new(0, 150, 0, 42)
+murderMysteriyv1Button.Position = UDim2.new(0, 28, 0, 5)
+murderMysteriyv1Button.Text = "Load BaikalHub"
+murderMysteriyv1Button.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+murderMysteriyv1Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+murderMysteriyv1Button.Font = Enum.Font.SourceSansBold
+murderMysteriyv1Button.TextSize = 16
+murderMysteriyv1Button.Parent = gamesScroll
+murderMysteriyv1Button.ZIndex = 23
+murderMysteriyv1Button.LayoutOrder = 4
+
+local murderMysteriyv1TopCorner = Instance.new("UICorner")
+murderMysteriyv1TopCorner.CornerRadius = UDim.new(0, 8)
+murderMysteriyv1TopCorner.Parent = murderMysteriyv1Button
+
 -- Script Raw -Loadstring 
 
 inkGamesButton.MouseButton1Click:Connect(function()
@@ -1302,10 +1319,21 @@ daHoodv1Button.MouseButton1Click:Connect(function()
     pcall(function()
 		daHoodv1Button.Text = "Loading. . ."
 		daHoodv1Button.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Actyrn/Scripts/main/AzureModded"))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Actyrn/Scripts/main/AzureModded", true))()
     end)
 	daHoodv1Button.Text = "Load AzureModded"
 	daHoodv1Button.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+	task.wait(5)
+end)
+
+murderMysteriyv1Button.MouseButton1Click:Connect(function()
+    pcall(function()
+		murderMysteriyv1Button.Text = "Loading. . ."
+		murderMysteriyv1Button.BackgroundColor3 = Color3.fromRGB(125, 0, 0)
+        loadstring(game:HttpGet('https://raw.githubusercontent.com/Roman34296589/SnapSanixHUB/refs/heads/main/SnapSanixHUB.lua', true))()
+    end)
+	murderMysteriyv1Button.Text = "Load BaikalHub"
+	murderMysteriyv1Button.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
 	task.wait(5)
 end)
 
