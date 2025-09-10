@@ -1595,7 +1595,7 @@ UpdateFramePosition()
 local camera = cam
 
 -- Ajustes
-local toggleOffsetY = -40 -- distancia desde top, ajusta como CoreGui
+local toggleOffsetY = -25 -- distancia desde top, ajusta como CoreGui
 local toggleCenterX = 0.5 -- siempre centrado horizontalmente
 
 -- Actualiza posición del toggleButton
