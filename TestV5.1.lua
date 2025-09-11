@@ -1929,12 +1929,12 @@ local camera = workspace.CurrentCamera
 -- ===== Configuración =====
 local baseViewport = Vector2.new(1920, 1080) -- Resolución en la que diseñaste la UI
 local minScale = 0.8 -- nunca se achicará más de 80% (para no romper scrolls)
-local maxScale = 1   -- en PC siempre queda igual
+local maxScale = 1.25   -- en PC siempre queda igual
 
 -- ===== UIScale dinámico =====
 local uiScale = Instance.new("UIScale")
 uiScale.Parent = frame  -- <<--- tu frame principal
-uiScale.Scale = 1
+uiScale.Scale = 1.25
 
 -- ===== Función para recalcular escala =====
 local function ApplyResponsiveScaling()
