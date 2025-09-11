@@ -1561,42 +1561,31 @@ xyzButton.MouseButton1Click:Connect(function()
 		xyzButton.BackgroundColor3 = redColor
 	end
 end)
--- Servicios y variables base (asegúrate de no duplicar estas variables en el archivo)
+-- SpeedLoopMode (Z) — solo XZ, dirección basada en la cámara horizontal.
+-- Reemplaza la sección de SpeedLoop existente por este bloque.
+-- Requisitos: variables globales existentes en tu script:
+-- player, UIS, RunService, workspace (o Workspace), flyButton, studsBox1, speedBox1
+-- moveKeys table (flags de InputBegan/InputEnded) es opcional pero recomendado.
+
 local RunService = game:GetService("RunService")
 local UIS = game:GetService("UserInputService")
 local Workspace = workspace
 
+-- Estado
 local speedLoopActive = false
-local flyLoopActive = false
 local speedLoopConnection = nil
-local flyLoopConnection = nil
 local prevAutoRotateSpeed = nil
 
--- Flags para compatibilidad (InputBegan/Ended)
-local moveKeys = {W=false, A=false, S=false, D=false}
-local targetPosition = nil
-
--- Helpers
-local function getChar()
-	local char = player.Character
-	if not char then return nil, nil, nil end
-	local hrp = char:FindFirstChild("HumanoidRootPart")
-	local humanoid = char:FindFirstChildOfClass("Humanoid")
-	return char, hrp, humanoid
-end
-
-local function resolveCharacter()
-	local char = player.Character or player.CharacterAdded:Wait()
-	local humanoid = char:WaitForChild("Humanoid")
-	local root = char:WaitForChild("HumanoidRootPart")
-	return char, root, humanoid
+-- Flags (si no existen en tu script, crea esta tabla global)
+if not moveKeys then
+	moveKeys = {W=false, A=false, S=false, D=false}
 end
 
 local function clamp(n, a, b)
 	return math.max(a, math.min(b, n))
 end
 
--- Obtener basis horizontal (forward/right) robusto desde la cámara
+-- Calcula forward/right proyectados en XZ (ignora componente Y de la cámara).
 local function getCameraBasisXZ()
 	local camC = Workspace.CurrentCamera or cam
 	if not camC then
@@ -1614,7 +1603,6 @@ local function getCameraBasisXZ()
 
 	local right = Vector3.new(rv.X, 0, rv.Z)
 	if right.Magnitude <= 1e-4 then
-		-- crear right a partir de forward si falla
 		right = Vector3.new(forward.Z, 0, -forward.X)
 		if right.Magnitude <= 1e-4 then
 			right = Vector3.new(1,0,0)
@@ -1628,215 +1616,170 @@ local function getCameraBasisXZ()
 	return forward, right
 end
 
--- ================== FLY LOOP (V) (SIN controles verticales) ==================
-local function stopFlyLoop()
-	if flyLoopConnection then
-		pcall(function() flyLoopConnection:Disconnect() end)
-		flyLoopConnection = nil
+-- Construye la dirección horizontal (XZ) combinando joystick y teclado.
+-- Prioriza joystick (humanoid.MoveDirection) si su magnitud es > threshold.
+local function buildHorizontalDirection(humanoid)
+	local forward, right = getCameraBasisXZ()
+
+	-- joystick (móvil)
+	if humanoid then
+		local md = humanoid.MoveDirection
+		if md and md.Magnitude > 0.15 then
+			-- md es vector world-space; interpretamos componentes X -> right, Z -> forward
+			local jx, jz = md.X, md.Z
+			local dir = right * jx + forward * jz
+			if dir.Magnitude > 0 then dir = dir.Unit end
+			return dir, forward
+		end
 	end
-	local _, root, humanoid = getChar()
-	if humanoid and root then
-		humanoid.PlatformStand = false
-		pcall(function() root.Velocity = Vector3.new(0,0,0) end)
+
+	-- teclado / flags
+	local w = UIS:IsKeyDown(Enum.KeyCode.W) or moveKeys.W
+	local s = UIS:IsKeyDown(Enum.KeyCode.S) or moveKeys.S
+	local a = UIS:IsKeyDown(Enum.KeyCode.A) or moveKeys.A
+	local d = UIS:IsKeyDown(Enum.KeyCode.D) or moveKeys.D
+
+	local vx, vz = 0, 0
+	if w then vz = vz + 1 end
+	if s then vz = vz - 1 end
+	if d then vx = vx + 1 end
+	if a then vx = vx - 1 end
+
+	if vx == 0 and vz == 0 then
+		return Vector3.new(0,0,0), forward
 	end
-	flyLoopActive = false
-	if loopFlyButton then
-		loopFlyButton.BackgroundColor3 = Color3.fromRGB(255,0,0)
-		loopFlyButton.Text = "Loop Fly (OFF)"
-	end
+
+	local dir = forward * vz + right * vx
+	if dir.Magnitude > 0 then dir = dir.Unit end
+	return dir, forward
 end
 
-local function startFlyLoop()
-	local char, root, humanoid = resolveCharacter()
-	if not (char and root and humanoid) then return end
-	humanoid.PlatformStand = true
-	-- fijar la altura actual: el fly mantendrá esta Y mientras se mueve en XZ
-	targetPosition = root.Position
-
-	-- desconectar si ya existía
-	if flyLoopConnection then pcall(function() flyLoopConnection:Disconnect() end) flyLoopConnection = nil end
-
-	flyLoopConnection = RunService.RenderStepped:Connect(function(dt)
-		-- comprobar validez
-		if not root or not root.Parent then
-			stopFlyLoop()
-			return
-		end
-
-		-- parámetros ajustables via UI (studs/speed)
-		local studs = tonumber((studsBox2 and studsBox2.Text) or "") or 150
-		local speed = tonumber((speedBox2 and speedBox2.Text) or "") or 16
-		studs = clamp(studs, 1, 2000)
-		speed = clamp(speed, 0.1, 1000)
-
-		local forward, right = getCameraBasisXZ()
-		local dir = Vector3.new(0,0,0)
-
-		-- horizontal: teclas o moveKeys (IsKeyDown + flags para compatibilidad móvil)
-		if UIS:IsKeyDown(Enum.KeyCode.W) or moveKeys.W then dir += forward end
-		if UIS:IsKeyDown(Enum.KeyCode.S) or moveKeys.S then dir -= forward end
-		if UIS:IsKeyDown(Enum.KeyCode.A) or moveKeys.A then dir -= right end
-		if UIS:IsKeyDown(Enum.KeyCode.D) or moveKeys.D then dir += right end
-
-		-- joystick/móvil: humanoid.MoveDirection (proyectado a XZ)
-		if humanoid then
-			local joy = humanoid.MoveDirection
-			if joy and joy.Magnitude > 0 then
-				local jx, jz = joy.X, joy.Z
-				if math.abs(jx) > math.abs(jz) then
-					if jx > 0 then dir += right else dir -= right end
-				else
-					if jz > 0 then dir += forward else dir -= forward end
-				end
-			end
-		end
-
-		-- deadzone para evitar drift
-		if dir.Magnitude > 1e-4 then
-			dir = dir.Unit
-		else
-			dir = Vector3.new(0,0,0)
-		end
-
-		-- MOVIMIENTO: studs method (solo horizontal) — mantenemos la Y original
-		local horizMove = dir * studs * (speed/16) * dt
-		targetPosition = targetPosition + horizMove
-		-- preservar la Y inicial (altitud fija)
-		local fixedY = root.Position.Y
-
-		-- Orientar y desplazar
-		local lookVector = (Workspace.CurrentCamera and Workspace.CurrentCamera.CFrame.Position or cam.CFrame.Position) - targetPosition
-		pcall(function()
-			root.CFrame = CFrame.new(Vector3.new(targetPosition.X, fixedY, targetPosition.Z), Vector3.new(targetPosition.X, fixedY, targetPosition.Z) + ( (lookVector * -1).Unit ))
-			root.Velocity = Vector3.new(0,0,0)
-		end)
-	end)
-end
-
-local function toggleFlyLoop()
-	if flyLoopActive then
-		stopFlyLoop()
-		return
-	end
-	-- detener speed si está activo
-	if speedLoopActive then
-		if speedLoopConnection then pcall(function() speedLoopConnection:Disconnect() end) speedLoopConnection = nil end
-		speedLoopActive = false
-	end
-	flyLoopActive = true
-	if loopFlyButton then
-		loopFlyButton.BackgroundColor3 = Color3.fromRGB(0,255,0)
-		loopFlyButton.Text = "Loop Fly (ON)"
-	end
-	startFlyLoop()
-end
-
--- ================== SPEED LOOP MODE (solo corre en XZ) ==================
+-- Stop speed loop safely
 local function stopSpeedLoop()
 	if speedLoopConnection then
 		pcall(function() speedLoopConnection:Disconnect() end)
 		speedLoopConnection = nil
 	end
-	local _, _, humanoid = getChar()
-	if humanoid and prevAutoRotateSpeed ~= nil then
-		pcall(function() humanoid.AutoRotate = prevAutoRotateSpeed end)
+
+	-- restaurar AutoRotate si lo cambiamos
+	local char = player.Character
+	if char then
+		local humanoid = char:FindFirstChildOfClass("Humanoid")
+		if humanoid and prevAutoRotateSpeed ~= nil then
+			pcall(function() humanoid.AutoRotate = prevAutoRotateSpeed end)
+		end
 	end
+
 	speedLoopActive = false
 	if flyButton then
-		flyButton.BackgroundColor3 = Color3.fromRGB(255,0,0)
-		flyButton.Text = "Speed Loop Mode"
+		pcall(function()
+			flyButton.BackgroundColor3 = Color3.fromRGB(255,0,0)
+			flyButton.Text = "Speed Loop Mode"
+		end)
 	end
 end
 
+-- Start speed loop: solo XZ, dirección basada en cámara horizontal (ignora Y de la cámara)
 local function startSpeedLoop()
-	local char, hrp, humanoid = getChar()
-	if not (char and hrp and humanoid) then return end
-	prevAutoRotateSpeed = humanoid.AutoRotate
-	humanoid.AutoRotate = false
+	local char = player.Character
+	if not char then return end
+	local hrp = char:FindFirstChild("HumanoidRootPart")
+	local humanoid = char:FindFirstChildOfClass("Humanoid")
+	if not (hrp and humanoid) then return end
 
+	-- Guardar AutoRotate y desactivar para evitar conflictos al setear CFrame
+	prevAutoRotateSpeed = humanoid.AutoRotate
+	pcall(function() humanoid.AutoRotate = false end)
+
+	-- desconectar si había conexión previa
 	if speedLoopConnection then pcall(function() speedLoopConnection:Disconnect() end) speedLoopConnection = nil end
 
+	-- Valor objetivo acumulado para suavizar y evitar drift al soltar teclas
+	local targetX, targetZ = hrp.Position.X, hrp.Position.Z
+
 	speedLoopConnection = RunService.RenderStepped:Connect(function(delta)
-		-- validar hrp
+		-- validar existencia
 		if not hrp or not hrp.Parent then
 			stopSpeedLoop()
 			return
 		end
 
+		-- parámetros desde UI (studs / speed)
 		local studs = tonumber((studsBox1 and studsBox1.Text) or "") or 15
 		local speed = tonumber((speedBox1 and speedBox1.Text) or "") or 16
 		studs = clamp(studs, 1, 2000)
 		speed = clamp(speed, 0.1, 1000)
 
-		local forward, right = getCameraBasisXZ()
-		local moveVec = Vector3.new(0,0,0)
-
-		-- teclas principales (IsKeyDown garantiza estado real)
-		if UIS:IsKeyDown(Enum.KeyCode.W) or moveKeys.W then moveVec += forward end
-		if UIS:IsKeyDown(Enum.KeyCode.S) or moveKeys.S then moveVec -= forward end
-		if UIS:IsKeyDown(Enum.KeyCode.A) or moveKeys.A then moveVec -= right end
-		if UIS:IsKeyDown(Enum.KeyCode.D) or moveKeys.D then moveVec += right end
-
-		-- joystick/móvil:
-		if humanoid then
-			local joy = humanoid.MoveDirection
-			if joy and joy.Magnitude > 0 then
-				local jx, jz = joy.X, joy.Z
-				if math.abs(jx) > math.abs(jz) then
-					if jx > 0 then moveVec += right else moveVec -= right end
-				else
-					if jz > 0 then moveVec += forward else moveVec -= forward end
-				end
-			end
-		end
-
-		-- si no hay movimiento, no hacemos nada (mantener)
-		if moveVec.Magnitude <= 1e-4 then
+		-- construir dirección horizontal según cámara
+		local dir, forward = buildHorizontalDirection(humanoid)
+		if dir.Magnitude <= 1e-4 then
+			-- no movimiento: estabilizar objetivo en la posición actual para evitar drift
+			targetX = hrp.Position.X
+			targetZ = hrp.Position.Z
 			return
 		end
 
-		moveVec = moveVec.Unit
+		-- Movimiento: studs method en XZ
+		local moveDelta = dir * studs -- vector unit * studs
+		-- Actualizar objetivo (acumulado)
+		targetX = targetX + moveDelta.X
+		targetZ = targetZ + moveDelta.Z
 
-		-- studs method: objetivo es moverse studs unidades en la dirección deseada, pero mantener Y actual (no volar)
-		local desired = hrp.Position + Vector3.new(moveVec.X * studs, 0, moveVec.Z * studs)
-		-- Interpolación suave controlada por "speed" y delta (para evitar saltos y para parecer natural)
-		local alpha = 1 - math.exp(-speed * delta)
-		local newPos = hrp.Position:Lerp(desired, alpha)
-		-- preservar la altura original
-		newPos = Vector3.new(newPos.X, hrp.Position.Y, newPos.Z)
+		-- Suavizado (lerp) para no teletransportar: alpha basado en 'speed' y delta
+		local alpha = 1 - math.exp(- (speed/16) * delta * 20) -- factor 20 para responsividad; ajustar si quieres más/menos suavidad
+		local currentPos = hrp.Position
+		local desiredPos = Vector3.new(targetX, currentPos.Y, targetZ)
+		local newPos = currentPos:Lerp(desiredPos, alpha)
 
+		-- Orientación: mirar en la dirección horizontal de la cámara (forward)
 		local lookDir = Vector3.new(forward.X, 0, forward.Z)
 		if lookDir.Magnitude <= 1e-4 then lookDir = Vector3.new(0,0,-1) end
 		lookDir = lookDir.Unit
+
+		-- Aplicar CFrame (protector)
 		pcall(function()
-			hrp.CFrame = CFrame.new(newPos, newPos + lookDir)
+			hrp.CFrame = CFrame.new(Vector3.new(newPos.X, currentPos.Y, newPos.Z), Vector3.new(newPos.X, currentPos.Y, newPos.Z) + lookDir)
 		end)
 	end)
 end
 
+-- Toggle speed loop
 local function toggleSpeedLoop()
 	if speedLoopActive then
 		stopSpeedLoop()
 		return
 	end
-	-- detener fly si está activo
-	if flyLoopActive then stopFlyLoop() end
+	-- si hay fly loop activo, apagarlo (evita conflictos)
+	if flyLoopActive and type(flyLoopActive) == "boolean" and flyLoopActive == true then
+		if flyLoopConnection then pcall(function() flyLoopConnection:Disconnect() end) flyLoopConnection = nil end
+		flyLoopActive = false
+		if loopFlyButton then
+			pcall(function() loopFlyButton.BackgroundColor3 = Color3.fromRGB(255,0,0); loopFlyButton.Text = "Loop Fly (OFF)" end)
+		end
+	end
+
 	speedLoopActive = true
 	if flyButton then
-		flyButton.BackgroundColor3 = Color3.fromRGB(0,255,0)
-		flyButton.Text = "Speed Loop Mode (ON)"
+		pcall(function()
+			flyButton.BackgroundColor3 = Color3.fromRGB(0,255,0)
+			flyButton.Text = "Speed Loop Mode (ON)"
+		end)
 	end
 	startSpeedLoop()
 end
 
--- ================== INPUT HANDLING (teclas + flags para móviles) ==================
+-- Conectar botones/teclas (si no los tienes conectados ya)
+if flyButton then
+	-- flyButton aquí se usa como UI para indicar el estado del speed loop en tu UI original
+	-- si tu script usa otro botón para speed, cámbialo aquí
+	flyButton.MouseButton1Click:Connect(toggleSpeedLoop)
+end
+
+-- Atajos de teclado para toggle (si ya los tienes conectados en otro sitio, omite)
 UIS.InputBegan:Connect(function(input, gpe)
 	if gpe then return end
-	-- toggles por tecla
 	if input.KeyCode == Enum.KeyCode.Z then toggleSpeedLoop() end
-	if input.KeyCode == Enum.KeyCode.V then toggleFlyLoop() end
-
-	-- movimiento
+	-- InputBegan también setea moveKeys si tu script usa esa tabla (compatible móvil)
 	if input.KeyCode and moveKeys[input.KeyCode.Name] ~= nil then
 		moveKeys[input.KeyCode.Name] = true
 	end
@@ -1848,12 +1791,252 @@ UIS.InputEnded:Connect(function(input)
 	end
 end)
 
--- ================== LIMPIEZA AL RESPAWNEAR ==================
+-- Asegurar limpieza en respawn (si ya lo haces en otra parte, puedes omitir)
 player.CharacterAdded:Connect(function()
 	stopSpeedLoop()
-	stopFlyLoop()
+end)
+-- FlyLoop implementation (camera-directed flying, WASD & joystick)
+-- Pega este bloque en tu script donde gestionas los loops (reemplaza o integra con la parte de FlyLoop).
+-- Requiere: variables globales preexistentes en tu script: player, UIS, RunService, workspace (Workspace), cam (opcional),
+-- y controles UI: loopFlyButton, studsBox2, speedBox2. Si no las tienes, adáptalo según tus nombres.
+
+local RunService = game:GetService("RunService")
+local UIS = game:GetService("UserInputService")
+local Workspace = workspace
+
+-- Usa la tabla moveKeys si ya existe; si no, crea una alternativa local para compatibilidad con InputBegan/Ended.
+local moveKeys = moveKeys or {W=false, A=false, S=false, D=false}
+
+-- Estado privado del FlyLoop
+local flyLoopActive = false
+local flyLoopConnection = nil
+local flyTargetPos = nil
+
+local function clamp(n, a, b)
+	return math.max(a, math.min(b, n))
+end
+
+local function getCharLocal()
+	local char = player and player.Character
+	if not char then return nil, nil, nil end
+	local hrp = char:FindFirstChild("HumanoidRootPart")
+	local humanoid = char:FindFirstChildOfClass("Humanoid")
+	return char, hrp, humanoid
+end
+
+local function resolveCharacterLocal()
+	local char = player.Character or player.CharacterAdded:Wait()
+	local humanoid = char:WaitForChild("Humanoid")
+	local root = char:WaitForChild("HumanoidRootPart")
+	return char, root, humanoid
+end
+
+-- Devuelve look/right completos (incluyen Y) y sus proyecciones XZ (Y = 0)
+local function getCameraVectors()
+	local camC = Workspace.CurrentCamera or cam
+	if not camC then
+		return Vector3.new(0,0,-1), Vector3.new(1,0,0), Vector3.new(0,0,-1), Vector3.new(1,0,0)
+	end
+	local look = camC.CFrame.LookVector
+	local right = camC.CFrame.RightVector
+
+	local lookFull = look.Magnitude > 0 and look.Unit or Vector3.new(0,0,-1)
+	local rightFull = right.Magnitude > 0 and right.Unit or Vector3.new(1,0,0)
+
+	local lookXZ = Vector3.new(look.X, 0, look.Z)
+	if lookXZ.Magnitude <= 1e-4 then lookXZ = Vector3.new(0,0,-1) else lookXZ = lookXZ.Unit end
+	local rightXZ = Vector3.new(right.X, 0, right.Z)
+	if rightXZ.Magnitude <= 1e-4 then rightXZ = Vector3.new(1,0,0) else rightXZ = rightXZ.Unit end
+
+	return lookFull, rightFull, lookXZ, rightXZ
+end
+
+-- Construye dirección de movimiento:
+-- - Prioriza joystick (humanoid.MoveDirection) si su magnitud > threshold,
+-- - Si no, usa teclado (IsKeyDown + moveKeys flags).
+-- Devuelve dirFull (incluye Y, para fly) y dirXZ (Y=0, para referência si necesario).
+local function buildMoveDirectionsForFly(humanoid)
+	local lookFull, rightFull, lookXZ, rightXZ = getCameraVectors()
+
+	-- joystick/mobile priority
+	if humanoid then
+		local md = humanoid.MoveDirection
+		if md and md.Magnitude > 0.15 then
+			-- md is world direction (X->right, Z->forward); map to camera basis (use full forward so Y included)
+			local jx, jz = md.X, md.Z
+			local dirFull = (rightFull * jx) + (lookFull * jz)
+			if dirFull.Magnitude > 0 then dirFull = dirFull.Unit end
+			local dirXZ = (rightXZ * jx) + (lookXZ * jz)
+			if dirXZ.Magnitude > 0 then dirXZ = dirXZ.Unit end
+			return dirFull, dirXZ
+		end
+	end
+
+	-- teclado
+	local w = UIS:IsKeyDown(Enum.KeyCode.W) or moveKeys.W
+	local s = UIS:IsKeyDown(Enum.KeyCode.S) or moveKeys.S
+	local a = UIS:IsKeyDown(Enum.KeyCode.A) or moveKeys.A
+	local d = UIS:IsKeyDown(Enum.KeyCode.D) or moveKeys.D
+
+	local vx, vz = 0, 0
+	if w then vz = vz + 1 end
+	if s then vz = vz - 1 end
+	if d then vx = vx + 1 end
+	if a then vx = vx - 1 end
+
+	if vx == 0 and vz == 0 then
+		return Vector3.new(0,0,0), Vector3.new(0,0,0)
+	end
+
+	local dirFull = (rightFull * vx) + (lookFull * vz)
+	if dirFull.Magnitude > 0 then dirFull = dirFull.Unit end
+	local dirXZ = (rightXZ * vx) + (lookXZ * vz)
+	if dirXZ.Magnitude > 0 then dirXZ = dirXZ.Unit end
+	return dirFull, dirXZ
+end
+
+-- Iniciar FlyLoop: mueve en la dirección de la cámara (incluye Y), studs-method para evitar anticheat
+local function startFlyLoop()
+	-- asegurar character
+	local char, root, humanoid = resolveCharacterLocal()
+	if not (char and root and humanoid) then return end
+
+	-- fijar posición objetivo inicial a la posición actual
+	flyTargetPos = root.Position
+
+	-- asegurar desconexión previa
+	if flyLoopConnection then pcall(function() flyLoopConnection:Disconnect() end) flyLoopConnection = nil end
+
+	-- activar PlatformStand para evitar animaciones/physics que interfieran
+	pcall(function() humanoid.PlatformStand = true end)
+
+	flyLoopConnection = RunService.RenderStepped:Connect(function(dt)
+		if not root or not root.Parent then
+			-- char muerto/respawn: detener
+			if flyLoopConnection then pcall(function() flyLoopConnection:Disconnect() end) flyLoopConnection = nil end
+			return
+		end
+
+		-- parámetros desde UI (si no existen, toman valores por defecto)
+		local studs = tonumber((studsBox2 and studsBox2.Text) or "") or 150
+		local speed = tonumber((speedBox2 and speedBox2.Text) or "") or 16
+		studs = clamp(studs, 1, 2000)
+		speed = clamp(speed, 0.1, 1000)
+
+		-- calcular direcciones (dirFull tiene componente Y basado en cámara)
+		local dirFull, dirXZ = buildMoveDirectionsForFly(humanoid)
+
+		-- si no hay input, estabilizar target en la posición actual para evitar drift
+		if dirFull.Magnitude <= 1e-4 then
+			flyTargetPos = root.Position
+			return
+		end
+
+		-- delta de movimiento: dirFull * studs * (speed/16) * dt
+		local delta = dirFull * (studs * (speed / 16) * dt)
+
+		-- acumular objetivo (mantiene fluidez)
+		flyTargetPos = flyTargetPos + delta
+
+		-- suavizar con LERP para evitar "teleport" brusco y para que el anticheat no detecte saltos
+		local alpha = 1 - math.exp(- (speed/16) * dt * 25) -- factor de suavizado; puedes ajustar
+		local newPos = root.Position:Lerp(flyTargetPos, alpha)
+
+		-- orientar el cuerpo horizontalmente hacia la cámara para consistencia visual (mantener Y de look en 0)
+		local cam = Workspace.CurrentCamera or cam
+		local camPos = cam and cam.CFrame.Position or Vector3.new(0,0,0)
+		local lookVec = camPos - newPos
+		local lookDirHoriz = Vector3.new(lookVec.X, 0, lookVec.Z)
+		if lookDirHoriz.Magnitude <= 1e-4 then lookDirHoriz = Vector3.new(0,0,-1) else lookDirHoriz = lookDirHoriz.Unit end
+
+		pcall(function()
+			root.CFrame = CFrame.new(newPos, newPos + lookDirHoriz)
+			-- cancelar velocidad residual
+			root.Velocity = Vector3.new(0,0,0)
+		end)
+	end)
+
+	-- UI feedback si existe el botón
+	if loopFlyButton then
+		pcall(function()
+			loopFlyButton.BackgroundColor3 = Color3.fromRGB(0,255,0)
+			loopFlyButton.Text = "Loop Fly (ON)"
+		end)
+	end
+
+	flyLoopActive = true
+end
+
+local function stopFlyLoop()
+	-- desconectar
+	if flyLoopConnection then
+		pcall(function() flyLoopConnection:Disconnect() end)
+		flyLoopConnection = nil
+	end
+
+	-- restaurar PlatformStand = false si humanoid existe
+	local _, root, humanoid = getCharLocal()
+	if humanoid and humanoid.Parent then
+		pcall(function() humanoid.PlatformStand = false end)
+	end
+
+	-- UI feedback
+	if loopFlyButton then
+		pcall(function()
+			loopFlyButton.BackgroundColor3 = Color3.fromRGB(255,0,0)
+			loopFlyButton.Text = "Loop Fly (OFF)"
+		end)
+	end
+
+	flyLoopActive = false
+	flyTargetPos = nil
+end
+
+local function toggleFlyLoop()
+	if flyLoopActive then
+		stopFlyLoop()
+	else
+		-- si speed loop está activo, detenerlo para evitar conflicto:
+		if speedLoopActive and type(speedLoopActive) == "boolean" and speedLoopActive then
+			-- intenta desconectar speed loop si existe (nombre de conexión puede variar en tu script)
+			pcall(function()
+				if speedLoopConnection then speedLoopConnection:Disconnect() end
+			end)
+			-- el script principal debería llevar la variable speedLoopActive a false
+		end
+		startFlyLoop()
+	end
+end
+
+-- Conectar el toggle al botón y a la tecla V (siempre checkear duplicados en tu script)
+if loopFlyButton then
+	pcall(function() loopFlyButton.MouseButton1Click:Connect(toggleFlyLoop) end)
+end
+
+UIS.InputBegan:Connect(function(input, gpe)
+	if gpe then return end
+	if input.KeyCode == Enum.KeyCode.V then
+		toggleFlyLoop()
+	end
+	-- mantener moveKeys compatibilidad
+	if input.KeyCode and moveKeys[input.KeyCode.Name] ~= nil then
+		moveKeys[input.KeyCode.Name] = true
+	end
 end)
 
+UIS.InputEnded:Connect(function(input)
+	if input.KeyCode and moveKeys[input.KeyCode.Name] ~= nil then
+		moveKeys[input.KeyCode.Name] = false
+	end
+end)
+
+-- asegurar limpieza al respawnear
+if player then
+	player.CharacterAdded:Connect(function()
+		-- detener fly loop y limpiar objetivo
+		pcall(stopFlyLoop)
+	end)
+end
 -- ===== Bloque Frame =====
 local camera = cam
 local frameRelativePos = UDim2.new(0.5, 0, 0.5, 0) -- posición inicial
