@@ -80,7 +80,7 @@ scrollFrame:GetPropertyChangedSignal("CanvasPosition"):Connect(function()
             contentHeight = math.max(contentHeight, child.Position.Y.Offset + child.AbsoluteSize.Y)
         end
     end
-    scrollFrame.CanvasSize = UDim2.new(0, 0, 0, contentHeight)
+    scrollFrame.CanvasSize = UDim2.new(0, 0, 0.40, contentHeight)
 end)
 scrollFrame.Parent = frame
 
