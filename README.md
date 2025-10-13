@@ -12,7 +12,7 @@ loadstring(game:HttpGet("https://github.com/lxi2on/UnTest983/raw/refs/heads/main
 ```
 
 ```lua
-loadstring(game:HttpGet("https://raw.githubusercontent.com/lxi2on/UnTest983/refs/heads/main/CAMLOCK%201.4%20NO%20PREDICTION%20OBFUSCATE.lua", true))()
+loadstring(game:HttpGet("https://github.com/lxi2on/UnTest983/blob/main/CAMLOCK%201.4%20NO%20PREDICTION%20OBFUSCATE.lua", true))()
 ```
 
 ------------------------------------------------------------
