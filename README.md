@@ -13,7 +13,7 @@ loadstring(game:HttpGet("https://github.com/lxi2on/UnTest983/raw/refs/heads/main
 ```
 
 ```lua
-loadstring(game:HttpGet("https://pastebin.com/3TxUy2aj", true))()
+loadstring(game:HttpGet("https://pastebin.com/raw/3TxUy2aj", true))()
 ```
 
 ------------------------------------------------------------
